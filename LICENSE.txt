@@ -1,0 +1,8 @@
+Copyright (c) 2025 Kaveh
+
+This software is proprietary and licensed per device.  
+Use of this application is subject to a valid license key provided by the creator.
+
+Redistribution, reverse engineering, or tampering with the license system is strictly prohibited.
+
+For commercial use or support, please contact: [taeb.kaveh@gmail.com]
