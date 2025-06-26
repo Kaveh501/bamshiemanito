@@ -17,6 +17,16 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QMenu, QFileDialog
 
+
+# new path
+def resource_path(relative_path):
+    """برمی‌گردونه مسیر درست فایل چه در زمان اجرا و چه در حالت بسته‌بندی شده"""
+    try:
+        base_path = sys._MEIPASS  # موقعی که از داخل exe اجرا میشه
+    except AttributeError:
+        base_path = os.path.abspath(".")  # موقعی که از سورس اجرا میشه
+    return os.path.join(base_path, relative_path)
+
 # code generator
 
 
@@ -25,7 +35,7 @@ def generate_license_key(length=12):
     return ''.join(random.choices(chars, k=length))
 
 
-def generate_licenses_file(filename='licenses.txt', count=1000):
+def generate_licenses_file(filename='license.data', count=1000):
     with open(filename, 'w') as f:
         for _ in range(count):
             key = generate_license_key()
@@ -34,7 +44,7 @@ def generate_licenses_file(filename='licenses.txt', count=1000):
 
 if __name__ == "__main__":
     generate_licenses_file()
-    print("✅ فایل licenses.txt با 1000 کد لایسنس ساخته شد.")
+    print("✅ فایل license.data با 1000 کد لایسنس ساخته شد.")
 
 
 def main():
@@ -59,7 +69,7 @@ if not os.path.exists(IMAGES_FOLDER):
 # === اضافه شده: بارگذاری لایسنس‌ها ===
 
 
-def load_valid_licenses(filename='licenses.txt'):
+def load_valid_licenses(filename='license.data'):
     valid_licenses = {}
     if os.path.exists(filename):
         with open(filename, 'r') as f:
@@ -129,9 +139,9 @@ class LoginDialog(QDialog):
         # خواندن کل لایسنس‌ها و تغییر وضعیت لایسنس مورد نظر
         try:
             lines = []
-            with open('licenses.txt', 'r') as f:
+            with open('license.data', 'r') as f:
                 lines = f.readlines()
-            with open('licenses.txt', 'w') as f:
+            with open('license.data', 'w') as f:
                 for line in lines:
                     key, used = line.strip().split(',')
                     if key == license_key:
@@ -301,10 +311,16 @@ class ChatBotGUI(QWidget):
         self.user_code = None
 
         # افزودن بک‌گراند
+
         self.bg_label = QLabel(self)
-        self.bg_label.setPixmap(QPixmap("bamshi.jpg").scaled(
+        self.bg_label.setGeometry(0, 0, 600, 580)
+        self.bg_label.lower()  # بک‌گراند بیاد عقب
+
+# حالا عکس رو روی اون ست می‌کنیم
+        bg_path = resource_path("bamshi.jpg")
+        self.bg_label.setPixmap(QPixmap(bg_path).scaled(
             self.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation))
-        # ویجت‌ها رو نیمه‌شفاف کنیم تا بک‌گراند دیده شه
+
         self.setStyleSheet("""
             QTextEdit, QLineEdit, QLabel, QComboBox {
                 background-color: rgba(255, 255, 255, 160);
@@ -486,21 +502,7 @@ class ChatBotGUI(QWidget):
             gallery.exec()
 
 
-# if __name__ == "__main__":
-#     app = QApplication(sys.argv)
-
-#     login = LoginDialog()
-#     if login.exec() == QDialog.Accepted:
-#         chatbot = ChatBotGUI()
-#         chatbot.user_code = login.entered_code
-#         chatbot.show()
-#         sys.exit(app.exec())
-#     else:
-#         sys.exit()
-
-
 # add new one
-
 LOCAL_LICENSE_FILE = "license.ok"
 
 
