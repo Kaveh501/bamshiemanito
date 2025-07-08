@@ -32,7 +32,7 @@ def resource_path(relative_path):
 
 
 def get_license_ok_path():
-    base_path = os.path.abspath(".")  # مسیر اجرای فعلی  exe
+    base_path = os.path.abspath(".")  # مسیر اجرای فعلی، کنار exe
     return os.path.join(base_path, "license.ok")
 
 
@@ -306,7 +306,7 @@ class GalleryWindow(QDialog):
         layout.addWidget(scroll)
         grid = QGridLayout(content)
 
-        images_folder_path = os.path.join(os.getcwd(), "user_data", "images")
+        images_folder_path = resource_path(IMAGES_FOLDER)
         images = []
         if os.path.exists(images_folder_path):
             images = [f for f in os.listdir(images_folder_path) if f.lower().endswith(
@@ -336,28 +336,12 @@ class ChatBotGUI(QWidget):
         self.setWindowTitle("Bamshie Manito 😻")
         self.resize(600, 580)
 
-        # new
-        user_data_folder = os.path.join(os.getcwd(), "user_data")
-        images_folder = os.path.join(user_data_folder, "images")
-        if not os.path.exists(images_folder):
-            os.makedirs(images_folder)
-
         self.knowledge_base = {}  # اضافه‌شد برای جلوگیری از ارور
-        self.profile_name = None
 
         self.bg = QLabel(self)
-        bg_image_path = resource_path("bamshi.jpg")
-
-        if not os.path.exists(bg_image_path):
-            print("❌ Background image not found:", bg_image_path)
-        else:
-            pixmap = QPixmap(bg_image_path)
-            if pixmap.isNull():
-                print("❌ Failed to load background image:", bg_image_path)
-            else:
-                self.bg.setPixmap(pixmap.scaled(
-                    self.size(), Qt.IgnoreAspectRatio))
-
+        bg_image_path = resource_path("images/bamshi.jpg")
+        self.bg.setPixmap(QPixmap(bg_image_path).scaled(
+            self.size(), Qt.IgnoreAspectRatio))
         self.bg.lower()
 
         self.setStyleSheet("""
@@ -420,12 +404,8 @@ class ChatBotGUI(QWidget):
         self.show_name_request()
 
     def resizeEvent(self, event):
-        bg_image_path = resource_path("bamshi.jpg")
-        if os.path.exists(bg_image_path):
-            pixmap = QPixmap(bg_image_path)
-            if not pixmap.isNull():
-                self.bg.setPixmap(pixmap.scaled(
-                    self.size(), Qt.IgnoreAspectRatio))
+        self.bg.setPixmap(QPixmap(resource_path(BG_IMAGE)).scaled(
+            self.size(), Qt.IgnoreAspectRatio))
         self.bg.setGeometry(0, 0, self.width(), self.height())
         super().resizeEvent(event)
 
@@ -492,16 +472,8 @@ class ChatBotGUI(QWidget):
         )
         if path:
             name = os.path.basename(path)
-            user_data_folder = os.path.join(os.getcwd(), "user_data")
-            images_folder = os.path.join(user_data_folder, "images")
-            dest = os.path.join(images_folder, name)
-            try:
-                shutil.copy(path, dest)
-                QMessageBox.information(
-                    self, "Success", f"Image uploaded to:\n{dest}")
-            except Exception as e:
-                QMessageBox.warning(
-                    self, "Error", f"Failed to upload image:\n{str(e)}")
+            dest = os.path.join(resource_path(IMAGES_FOLDER), name)
+            shutil.copy(path, dest)
 
     def open_gallery(self):
         dlg = PasswordDialog()
